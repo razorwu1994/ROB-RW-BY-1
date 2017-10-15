@@ -19,7 +19,7 @@ def trilaterate3D(distances):
 
     points = []
     for singleCombinations in itertools.combinations(planes, 3):
-        # planeCounter=0
+        planeCounter=0
         planesMatrix = []
         resultXdetMatrix = []
         resultYdetMatrix = []
@@ -29,13 +29,12 @@ def trilaterate3D(distances):
         resultZ_point = 0.0
         for plane in singleCombinations:
             planesMatrix.append([plane.A, plane.B, plane.C])
-            resultXdetMatrix.append([plane.D, plane.B, plane.C])
-            resultYdetMatrix.append([plane.A, plane.D, plane.C])
-            resultZdetMatrix.append([plane.A, plane.B, plane.D])
-
+            resultXdetMatrix.append([-1*plane.D, plane.B, plane.C])
+            resultYdetMatrix.append([plane.A, -1*plane.D, plane.C])
+            resultZdetMatrix.append([plane.A, plane.B, -1*plane.D])
             # print "plane "+str(planeCounter)+" equation : "+str(plane.A)+"X+"+str(plane.B)+"Y+"+str(plane.C)+"Z+"+str(plane.D)+"=0"
             # planeCounter+=1
-
+            #
         a = np.array(planesMatrix)
         result_det = float(np.linalg.det(a))
         # if det is 0 , that means these 3 planes has no single point intersection
@@ -43,8 +42,15 @@ def trilaterate3D(distances):
             pass
         # we got the point
         else:
+            # print "good"
+            # print resultYdetMatrix
             # print "found the point"
             # according to cramer's rule, we found the point and remove difference between -0.0 and 0.0
+            # print result_det
+            # print np.linalg.det(np.array(resultXdetMatrix))
+            # print np.linalg.det(np.array(resultYdetMatrix))
+            # print np.linalg.det(np.array(resultZdetMatrix))
+
             resultX_point = roundFunction(float(np.linalg.det(np.array(resultXdetMatrix))) / result_det)
             resultY_point = roundFunction(float(np.linalg.det(np.array(resultYdetMatrix))) / result_det)
             resultZ_point = roundFunction(float(np.linalg.det(np.array(resultZdetMatrix))) / result_det)
