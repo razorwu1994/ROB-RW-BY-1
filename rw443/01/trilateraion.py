@@ -19,7 +19,7 @@ def trilaterate3D(distances):
 
     points = []
     for singleCombinations in itertools.combinations(planes, 3):
-        # planeCounter=0
+        planeCounter=0
         planesMatrix = []
         resultXdetMatrix = []
         resultYdetMatrix = []
@@ -29,13 +29,11 @@ def trilaterate3D(distances):
         resultZ_point = 0.0
         for plane in singleCombinations:
             planesMatrix.append([plane.A, plane.B, plane.C])
-            resultXdetMatrix.append([plane.D, plane.B, plane.C])
-            resultYdetMatrix.append([plane.A, plane.D, plane.C])
-            resultZdetMatrix.append([plane.A, plane.B, plane.D])
-
-            # print "plane "+str(planeCounter)+" equation : "+str(plane.A)+"X+"+str(plane.B)+"Y+"+str(plane.C)+"Z+"+str(plane.D)+"=0"
+            resultXdetMatrix.append([-1*plane.D, plane.B, plane.C])
+            resultYdetMatrix.append([plane.A, -1*plane.D, plane.C])
+            resultZdetMatrix.append([plane.A, plane.B, -1*plane.D])
             # planeCounter+=1
-
+            #
         a = np.array(planesMatrix)
         result_det = float(np.linalg.det(a))
         # if det is 0 , that means these 3 planes has no single point intersection
@@ -43,7 +41,6 @@ def trilaterate3D(distances):
             pass
         # we got the point
         else:
-            # print "found the point"
             # according to cramer's rule, we found the point and remove difference between -0.0 and 0.0
             resultX_point = roundFunction(float(np.linalg.det(np.array(resultXdetMatrix))) / result_det)
             resultY_point = roundFunction(float(np.linalg.det(np.array(resultYdetMatrix))) / result_det)
@@ -51,15 +48,12 @@ def trilaterate3D(distances):
             tempPoint = point(resultX_point, resultY_point, resultZ_point)
             if not check_duplicate(points, tempPoint):
                 points.append(tempPoint)
-                # print "at " + "(" + str(resultX_point) + "," + str(resultY_point) + "," + str(resultZ_point) + ")"
             else:pass
-                # print "duplicate point"
-        # print "\n"
 
-    if len(points) == 0: print "no point found reason could be : intersecting at a plane or a line, or no intersection at all"
+    if len(points) == 0:
+        pass
     for p in points:
         counter += 1
-        print str(counter) + " points"
 
     return [points[0].x,points[0].y,points[0].z,0.]
 #helper function
@@ -109,7 +103,6 @@ def get_two_spheres_intersecting_plane(c1, c2):
 
 
     d = get_two_points_distance(p1, p2)
-    # print("distance between ("+str(p1.x)+","+str(p1.y)+","+str(p1.z)+") and ("
     #       +str(p2.x)+","+str(p2.y)+","+str(p2.z) +") is "+str(d))
 
     # if to far away, or self contained - can't be done
@@ -136,10 +129,8 @@ def get_two_spheres_intersecting_plane(c1, c2):
         tempC = tempC / gcd
         tempD = tempD / gcd
 
-    # print "gcd is " + str(gcd)
     TempPlane = plane(tempA,tempB,tempC,tempD)
 
-    # print("intersecting plane equation : "+str(tempA)+"X+"+str(tempB)+"Y+"+str(tempC)+"Z+"+str(tempD)+"=0")
 
     return [TempPlane]
 
@@ -157,11 +148,8 @@ def get_all_intersecting_planes(spheres):
 
 
 def is_contained_in_spheres(point, spheres):
-    # print str(point.x)+","+str(point.y)+","+str(point.z)
     for i in range(len(spheres)):
         if (get_two_points_distance(point, spheres[i].center) > (spheres[i].radius)):
-            print "distance"+str(get_two_points_distance(point, spheres[i].center))
-            print str(spheres[i].radius)
             return False
     return True
 
