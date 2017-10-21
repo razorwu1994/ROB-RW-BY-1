@@ -168,7 +168,7 @@ if __name__ == "__main__":
         P_k = getP_K(K_k, P_k_minus)
         x_k_hat = getX_K_Hat(x_k_hat_minus, K_k, z_k)
 
-        
+        """
         if k == 0: # temp
             print "x_0_hat = {}\n".format(x_k_hat_prev)
             print "u_0 = {}\n".format(u_k_prev)
@@ -177,7 +177,7 @@ if __name__ == "__main__":
             print "K_1 = {}\n".format(K_k)
             print "P_1 = {}\n".format(P_k)
             print "x_1_hat = {}".format(x_k_hat)
-        
+        """
             
         # Store values found
         averages_list.append(x_k_hat)
