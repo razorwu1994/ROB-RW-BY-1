@@ -12,7 +12,7 @@ def getX_K_Hat_Minus(x_k_hat_prev, u_k_prev):
     x_k_hat_prev = x_k-1_hat
     u_k_prev = u_k-1
 
-    Returns: x_k_hat as a 2-vector (2x1 numpy.matrix)
+    Returns: x_k_hat as a 2x1 numpy matrix
     """
     x_k_hat_minus = x_k_hat_prev + u_k_prev
     return x_k_hat_minus
@@ -25,7 +25,7 @@ def getP_K_Minus(P_k_prev):
     Parameters:
     P_k 
 
-    Returns: P_k_minus as a 2x2 matrix
+    Returns: P_k_minus as a 2x2 numpy matrix
     """
     Q11 = math.pow(10, -4) # For value at Q(1, 1)
     Q12 = 2 * math.pow(10, -5) # For value at Q(1, 2)
@@ -46,7 +46,9 @@ def getKalmanGain(P_k_minus):
     R11 = math.pow(10, -2) # For value at R(1, 1)
     R12 = 5 * math.pow(10, -3) # For value at R(1, 2)
     R = np.matrix("{0} {1}; {1} {0}".format(R11, R12))
-    K_k = P_k_minus/(P_k_minus + R)
+    denominator = P_k_minus + R
+    denominator_inv = np.linalg.inv(denominator)
+    K_k = P_k_minus * denominator_inv
     return K_k
 
 def getP_K(K_k, P_k_minus):
@@ -109,9 +111,9 @@ def plotData(avg_list, obs_list):
     title = "Observations & Predicted Values"
     plt.title(title)
     plt.grid(True)
-    # plt.plot(averages_x, averages_y, 'r', obs_list_x, obs_list_y, 'b')
-    # plt.plot(obs_list_x, obs_list_y, 'b')
-    plt.plot(averages_x, averages_y, 'r')
+    plt.plot(obs_list_x, obs_list_y, 'b', label='observations')
+    plt.plot(averages_x, averages_y, 'r', label='predictions')
+    plt.legend(loc='upper right')
     plt.show()
 
 if __name__ == "__main__":
@@ -143,7 +145,7 @@ if __name__ == "__main__":
     x_k_hat_prev = np.matrix("{} ; {}".format(x10, x20)) # Start with x_0_hat
 
     averages_list = [] # List of x_k_hat 2-vectors found starting at k = 1
-    variance_list = [] # List of P_k 2-vectors found starting at k = 1
+    variance_list = [] # List of P_k 2z2 matrices found starting at k = 1
     obs_list = [] # List of z_k vectors starting at k = 1
 
     for k in range(len(data)):
@@ -166,6 +168,7 @@ if __name__ == "__main__":
         P_k = getP_K(K_k, P_k_minus)
         x_k_hat = getX_K_Hat(x_k_hat_minus, K_k, z_k)
 
+        
         if k == 0: # temp
             print "x_0_hat = {}\n".format(x_k_hat_prev)
             print "u_0 = {}\n".format(u_k_prev)
@@ -174,7 +177,7 @@ if __name__ == "__main__":
             print "K_1 = {}\n".format(K_k)
             print "P_1 = {}\n".format(P_k)
             print "x_1_hat = {}".format(x_k_hat)
-
+        
             
         # Store values found
         averages_list.append(x_k_hat)
@@ -185,11 +188,13 @@ if __name__ == "__main__":
         x_k_hat_prev = x_k_hat
         P_k_prev = P_k
 
+    """
     # Print the predicted x_k values and variances
     for k in range(len(averages_list)):
         print "x_{0}_hat = {1} \n P_{0} = {2} \n z_{0} = {3} \n\n".format(k, averages_list[k], variance_list[k], obs_list[k])
+    """
 
-    print "Length of averages list: {}".format(len(averages_list))
-    print "Length of obs list: {}".format(len(obs_list))
+    # print "Length of averages list: {}".format(len(averages_list))
+    # print "Length of obs list: {}".format(len(obs_list))
 
     plotData(averages_list, obs_list)
